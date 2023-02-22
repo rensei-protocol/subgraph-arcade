@@ -164,6 +164,9 @@ export function handleLoanStarted(event: LoanStartedEvent): void {
   let loanContract = Contract.bind(Address.fromString(event.address.toHexString()));
   let loanData = loanContract.getLoan(event.params.loanId);
   let loan = new Loan(event.params.loanId.toString());
+  loan.blockNumber = event.block.number
+  loan.blockTimestamp = event.block.timestamp
+  loan.transactionHash = event.transaction.hash
   loan.borrower = event.params.borrower;
   loan.lender = event.params.lender;
   loan.state = loanData.state;

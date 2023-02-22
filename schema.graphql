@@ -175,5 +175,8 @@ type Loan @entity {
   collateralAddress: Bytes!
   collateralId: BigInt!
   payableCurrency: Bytes!
-  timestamp: Int! 
+  timestamp: Int!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
 }
