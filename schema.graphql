@@ -156,3 +156,24 @@ type Upgraded @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
+
+type Loan @entity {
+  id: ID! 
+  lender: Bytes!
+  borrower: Bytes!
+  state: Int!
+  numInstallmentsPaid: Int!
+  startDate: BigInt!
+  balance: BigInt!
+  balancePaid: BigInt!
+  lateFeesAccrued: BigInt!
+  durationSecs: BigInt!
+  deadline: BigInt!
+  numInstallments: Int!
+  interestRate: BigInt!
+  principal: BigInt!
+  collateralAddress: Bytes!
+  collateralId: BigInt!
+  payableCurrency: Bytes!
+  timestamp: Int! 
+}

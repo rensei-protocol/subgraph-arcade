@@ -1,6 +1,8 @@
+import { Address } from "@graphprotocol/graph-ts"
 import {
   AdminChanged as AdminChangedEvent,
   BeaconUpgraded as BeaconUpgradedEvent,
+  Contract,
   FeesClaimed as FeesClaimedEvent,
   InstallmentPaymentReceived as InstallmentPaymentReceivedEvent,
   LoanClaimed as LoanClaimedEvent,
@@ -22,6 +24,7 @@ import {
   BeaconUpgraded,
   FeesClaimed,
   InstallmentPaymentReceived,
+  Loan,
   LoanClaimed,
   LoanCreated,
   LoanRepaid,
@@ -158,18 +161,28 @@ export function handleLoanRolledOver(event: LoanRolledOverEvent): void {
 }
 
 export function handleLoanStarted(event: LoanStartedEvent): void {
-  let entity = new LoanStarted(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
-  )
-  entity.loanId = event.params.loanId
-  entity.lender = event.params.lender
-  entity.borrower = event.params.borrower
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
+  let loanContract = Contract.bind(Address.fromString(event.address.toHexString()));
+  let loanData = loanContract.getLoan(event.params.loanId);
+  let loan = new Loan(event.params.loanId.toString());
+  loan.borrower = event.params.borrower;
+  loan.lender = event.params.lender;
+  loan.state = loanData.state;
+  loan.numInstallmentsPaid = loanData.numInstallmentsPaid;
+  loan.startDate = loanData.startDate;
+  loan.balance = loanData.balance;
+  loan.balancePaid = loanData.balancePaid;
+  loan.lateFeesAccrued = loanData.lateFeesAccrued;
+  let loanTerms = loanData.terms;
+  loan.durationSecs = loanTerms.durationSecs;
+  loan.deadline = loanTerms.deadline;
+  loan.numInstallments = loanTerms.numInstallments;
+  loan.interestRate = loanTerms.interestRate;
+  loan.principal = loanTerms.principal;
+  loan.collateralAddress = loanTerms.collateralAddress;
+  loan.collateralId = loanTerms.collateralId;
+  loan.payableCurrency = loanTerms.payableCurrency;
+  loan.timestamp = event.block.timestamp.toI32()
+  loan.save();
 }
 
 export function handleNonceUsed(event: NonceUsedEvent): void {
